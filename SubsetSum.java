@@ -29,7 +29,7 @@ Sample Output-1:
 2 8
 10 */
 
-import java.util.*;
+import java.util.Scanner;
 public class SubsetSum {
     public static void getSum(int arr[],int n,int i,int sum,int target,String s){
         if(i>=n) return;
@@ -45,14 +45,12 @@ public class SubsetSum {
         getSum(arr,n,i+1,sum,target,s);
     }
     public static void main (String[] args) {
-        int n = 7;
-        int arr[] = {1,2,3,5,6,8,10};
-        int target = 10;
-        // Scanner sc = new Scanner(System.in);
-        // int n = sc.nextInt();
-        // int arr[] = new int[n];
-        // for (int i=0; i<n; i++) arr[i] = sc.nextInt();
-        // int target = sc.nextInt();
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int arr[] = new int[n];
+        for (int i=0; i<n; i++) arr[i] = sc.nextInt();
+        int target = sc.nextInt();
         getSum(arr,n,0,0,target,"");
+        sc.close();
     }
 }
