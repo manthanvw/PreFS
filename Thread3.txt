@@ -1,0 +1,71 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class TrafficLightSystem {
+
+    public static void main(String[] args) {
+        TrafficLight trafficLight = new TrafficLight();
+        Scanner sc=new Scanner(System.in);
+        int n=sc.nextInt();
+        int[] cars = new int[n];
+        int[] directions = new int[n];
+        int[] arrivalTimes = new int[n];
+
+
+        for (int i = 0; i < n; i++) {
+            int carId = sc.nextInt();
+            int direction = sc.nextInt();
+            int roadId = (direction <= 2 ? 1 : 2);
+
+            Runnable turnGreen = () -> {
+                String message = "Traffic Light On Road " + (roadId == 1 ? "A" : "B") + " Is Green";
+                System.out.println(message);
+            };
+
+            Runnable crossCar = () -> {
+                String message = "Car " + carId + " Has Passed Road " + (roadId == 1 ? "A" : "B") + " In Direction " + direction;
+                System.out.println(message);
+            };
+
+            trafficLight.carArrived(carId, roadId, direction, turnGreen, crossCar);
+            // Simulate time gap between car arrivals
+            try {
+                Thread.sleep(arrivalTimes[i]);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+
+class TrafficLight {
+
+    private final Signal signal;
+
+    public TrafficLight() {
+        signal = new Signal();
+    }
+
+    public void carArrived(
+            int carId,
+            int roadId,
+            int direction,
+            Runnable turnGreen,
+            Runnable crossCar
+    ) {
+        synchronized (signal) {
+            if (signal.greenRoad != roadId) {
+                turnGreen.run();
+                signal.greenRoad = roadId;
+            }
+            crossCar.run();
+        }
+    }
+
+    class Signal {
+        int greenRoad = 1; // 1 corresponds to Road A
+    }
+}
+

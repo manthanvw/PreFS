@@ -1,0 +1,114 @@
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+      Scanner sc=new Scanner(System.in);
+        int n = sc.nextInt(); // Set the desired length of the sequence
+        HiHello hh = new HiHello(n);
+
+        Thread threadA = new Thread(() -> {
+            try {
+                hh.hi(() -> System.out.print("Hi "));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+        Thread threadB = new Thread(() -> {
+            try {
+                hh.hello(() -> System.out.print("Hello "));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+        Thread threadC = new Thread(() -> {
+            try {
+                hh.hihello(() -> System.out.print("HiHello "));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+        Thread threadD = new Thread(() -> {
+            try {
+                hh.number(() -> System.out.print(hh.getCurrentNumber() + " "));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+        threadA.start();
+        threadB.start();
+        threadC.start();
+        threadD.start();
+
+        try {
+            threadA.join();
+            threadB.join();
+            threadC.join();
+            threadD.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+class HiHello {
+    private int n;
+    private int currentNumber;
+
+    public HiHello(int n) {
+        this.n = n;
+        this.currentNumber = 1;
+    }
+    public int getCurrentNumber() {
+        return this.currentNumber;
+    }
+    public synchronized void hi(Runnable printFizz) throws InterruptedException {
+        while (currentNumber <= n) {
+            if (currentNumber % 3 == 0 && currentNumber % 5 != 0) {
+                printFizz.run();
+                currentNumber++;
+                notifyAll();
+            } else {
+                wait();
+            }
+        }
+    }
+
+    public synchronized void hello(Runnable printBuzz) throws InterruptedException {
+        while (currentNumber <= n) {
+            if (currentNumber % 5 == 0 && currentNumber % 3 != 0) {
+                printBuzz.run();
+                currentNumber++;
+                notifyAll();
+            } else {
+                wait();
+            }
+        }
+    }
+
+    public synchronized void hihello(Runnable printHiHello) throws InterruptedException {
+        while (currentNumber <= n) {
+            if (currentNumber % 3 == 0 && currentNumber % 5 == 0) {
+                printHiHello.run();
+                currentNumber++;
+                notifyAll();
+            } else {
+                wait();
+            }
+        }
+    }
+
+    public synchronized void number(Runnable printNumber) throws InterruptedException {
+        while (currentNumber <= n) {
+            if (currentNumber % 3 != 0 && currentNumber % 5 != 0) {
+                printNumber.run();
+                currentNumber++;
+                notifyAll();
+            } else {
+                wait();
+            }
+        }
+    }
+}

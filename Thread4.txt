@@ -1,0 +1,65 @@
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc=new Scanner(System.in);
+        int n = sc.nextInt(); // Set the desired length of the sequence
+        KmitNgit kn = new KmitNgit(n);
+
+        Thread threadA = new Thread(() -> {
+            try {
+                kn.kmit(() -> System.out.print("Kmit"));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+        Thread threadB = new Thread(() -> {
+            try {
+                kn.ngit(() -> System.out.print("Ngit"));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+
+        threadA.start();
+        threadB.start();
+    }
+}
+
+class KmitNgit {
+    private int n;
+
+    public KmitNgit(int n) {
+        this.n = n;
+    }
+    
+    volatile boolean printF = true;
+
+    public  void kmit(Runnable printKmit) throws InterruptedException {
+            for (int i = 0; i < n; i++) {
+                synchronized (this){
+                    if(!printF){
+                        this.wait();
+                    }
+                    printKmit.run();
+                    printF = false;
+                    this.notifyAll();
+                }
+            }
+    }
+
+    public  void ngit(Runnable printNgit) throws InterruptedException {
+        for (int i = 0; i < n; i++) {
+                synchronized (this){
+                    if(printF){
+                        this.wait();
+                    }
+                    printNgit.run();
+                    printF = true;
+                    this.notifyAll();
+                }
+            }
+    }
+}
